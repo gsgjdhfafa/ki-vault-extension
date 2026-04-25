@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>KI-Vault Einstellungen</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0f1e; color: #e8f0fe; font-family: system-ui, sans-serif; padding: 40px; max-width: 700px; margin: 0 auto; }
+  h1 { color: #00d4ff; font-size: 22px; margin-bottom: 4px; }
+  h2 { color: #00d4ff; font-size: 14px; margin: 28px 0 12px; text-transform: uppercase; letter-spacing: .05em; }
+  p  { color: #7b93c8; font-size: 13px; margin-bottom: 20px; }
+  .card { background: #0d1428; border: 1px solid #1e2d55; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  label { display: block; font-size: 12px; color: #7b93c8; margin-bottom: 6px; }
+  input[type=number], input[type=text], select {
+    background: #162040; border: 1px solid #1e2d55; border-radius: 8px;
+    padding: 8px 12px; color: #e8f0fe; font-size: 13px; outline: none; width: 100%;
+  }
+  input:focus, select:focus { border-color: #00d4ff44; }
+  .row { display: flex; gap: 16px; margin-bottom: 14px; }
+  .row > div { flex: 1; }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e2d5533; }
+  .toggle-label { font-size: 13px; }
+  .toggle-desc  { font-size: 11px; color: #7b93c8; margin-top: 2px; }
+  .toggle {
+    position: relative; width: 40px; height: 22px; flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; inset: 0; background: #162040; border-radius: 22px;
+    border: 1px solid #1e2d55; cursor: pointer; transition: .2s;
+  }
+  .toggle-slider::before {
+    content: ''; position: absolute; width: 16px; height: 16px; left: 2px; top: 2px;
+    background: #7b93c8; border-radius: 50%; transition: .2s;
+  }
+  input:checked + .toggle-slider { background: #00d4ff22; border-color: #00d4ff44; }
+  input:checked + .toggle-slider::before { transform: translateX(18px); background: #00d4ff; }
+  .btn {
+    padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 700;
+    cursor: pointer; border: none; transition: opacity .15s;
+  }
+  .btn-primary { background: #00d4ff; color: #0a0f1e; }
+  .btn-danger  { background: transparent; border: 1px solid #ff6b6b44; color: #ff6b6b; }
+  .btn:hover   { opacity: .85; }
+  #save-msg { font-size: 12px; color: #00e5a0; margin-left: 12px; display: none; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; color: #7b93c8; padding: 6px 8px; border-bottom: 1px solid #1e2d55; font-weight: 600; }
+  td { padding: 6px 8px; border-bottom: 1px solid #1e2d5533; color: #e8f0fe; }
+  td input[type=number] { width: 70px; padding: 4px 8px; }
+</style>
+</head>
+<body>
+<h1>🏛️ KI-Vault Einstellungen</h1>
+<p>Konfiguriere das Scoring, die Auto-Scan-Einstellungen und den Export-Pfad.</p>
+
+<h2>Score-Schwellen</h2>
+<div class="card">
+  <div class="row">
+    <div>
+      <label>🏆 Top-Asset ab Score</label>
+      <input type="number" id="thresh-top" value="75" min="1" max="100">
+    </div>
+    <div>
+      <label>💎 Wertvoll ab Score</label>
+      <input type="number" id="thresh-good" value="55" min="1" max="100">
+    </div>
+    <div>
+      <label>📌 Nützlich ab Score</label>
+      <input type="number" id="thresh-ok" value="35" min="1" max="100">
+    </div>
+  </div>
+  <p style="margin:0;font-size:11px;color:#7b93c8;">Threads unter "Nützlich" werden still gespeichert aber nicht angezeigt.</p>
+</div>
+
+<h2>Auto-Scan</h2>
+<div class="card">
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label">Automatischer Scan</div>
+      <div class="toggle-desc">Scannt jeden Thread beim Öffnen automatisch</div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="auto-scan" checked><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div>
+      <div class="toggle-label">Bubble-Benachrichtigungen</div>
+      <div class="toggle-desc">Score-Blase nach jedem Scan anzeigen</div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="show-bubble" checked><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row" style="border:none;">
+    <div>
+      <div class="toggle-label">Müll stumm (Score &lt; 35)</div>
+      <div class="toggle-desc">Keine Benachrichtigung bei niedrigem Score</div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="silent-trash" checked><span class="toggle-slider"></span></label>
+  </div>
+</div>
+
+<h2>Plattformen</h2>
+<div class="card">
+  <div class="toggle-row">
+    <div><div class="toggle-label">ChatGPT</div></div>
+    <label class="toggle"><input type="checkbox" id="plat-chatgpt" checked><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div><div class="toggle-label">Claude</div></div>
+    <label class="toggle"><input type="checkbox" id="plat-claude" checked><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div><div class="toggle-label">Gemini</div></div>
+    <label class="toggle"><input type="checkbox" id="plat-gemini" checked><span class="toggle-slider"></span></label>
+  </div>
+  <div class="toggle-row" style="border:none;">
+    <div><div class="toggle-label">Perplexity</div></div>
+    <label class="toggle"><input type="checkbox" id="plat-perplexity" checked><span class="toggle-slider"></span></label>
+  </div>
+</div>
+
+<h2>Keyword-Gewichtung anpassen</h2>
+<div class="card">
+  <p style="margin:0 0 12px;font-size:12px;color:#7b93c8;">Manuelle Basis-Gewichte (werden durch Lernen automatisch angepasst)</p>
+  <div style="max-height:200px;overflow-y:auto;">
+    <table id="kw-table">
+      <tr><th>Keyword</th><th>Basisgewicht</th></tr>
+    </table>
+  </div>
+</div>
+
+<h2>Daten</h2>
+<div class="card">
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <button class="btn btn-danger" id="btn-clear-all">🗑️ Alle Threads löschen</button>
+    <button class="btn btn-danger" id="btn-clear-learn">🔄 Lerndaten zurücksetzen</button>
+  </div>
+</div>
+
+<div style="margin-top:24px;display:flex;align-items:center;">
+  <button class="btn btn-primary" id="btn-save">💾 Speichern</button>
+  <span id="save-msg">✅ Gespeichert!</span>
+</div>
+
+<script>
+const TOP_KW = [
+  ['ki4ki',8],['dpma',8],['patent',7],['n8n',6],['taucherteam',6],['businessplan',7],
+  ['```',6],['html',5],['python',5],['javascript',5],['typescript',5],['docker',5],
+  ['workflow',5],['automation',5],['systemprompt',6],['saas',6],['retainer',6],
+];
+
+// Populate keyword table
+const table = document.getElementById('kw-table');
+TOP_KW.forEach(([kw, w]) => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td style="font-family:monospace">${kw}</td>
+    <td><input type="number" data-kw="${kw}" value="${w}" min="-10" max="20" style="width:70px;background:#162040;border:1px solid #1e2d55;border-radius:6px;padding:4px 8px;color:#e8f0fe;font-size:12px;"></td>`;
+  table.appendChild(tr);
+});
+
+// Load settings
+chrome.storage.local.get(['kivault_settings'], r => {
+  const s = r.kivault_settings || {};
+  if (s.threshTop)  document.getElementById('thresh-top').value  = s.threshTop;
+  if (s.threshGood) document.getElementById('thresh-good').value = s.threshGood;
+  if (s.threshOk)   document.getElementById('thresh-ok').value   = s.threshOk;
+  if (s.autoScan    !== undefined) document.getElementById('auto-scan').checked     = s.autoScan;
+  if (s.showBubble  !== undefined) document.getElementById('show-bubble').checked   = s.showBubble;
+  if (s.silentTrash !== undefined) document.getElementById('silent-trash').checked  = s.silentTrash;
+  ['chatgpt','claude','gemini','perplexity'].forEach(p => {
+    if (s[`plat_${p}`] !== undefined)
+      document.getElementById(`plat-${p}`).checked = s[`plat_${p}`];
+  });
+});
+
+// Save
+document.getElementById('btn-save').onclick = () => {
+  const settings = {
+    threshTop:  +document.getElementById('thresh-top').value,
+    threshGood: +document.getElementById('thresh-good').value,
+    threshOk:   +document.getElementById('thresh-ok').value,
+    autoScan:    document.getElementById('auto-scan').checked,
+    showBubble:  document.getElementById('show-bubble').checked,
+    silentTrash: document.getElementById('silent-trash').checked,
+    plat_chatgpt:   document.getElementById('plat-chatgpt').checked,
+    plat_claude:    document.getElementById('plat-claude').checked,
+    plat_gemini:    document.getElementById('plat-gemini').checked,
+    plat_perplexity: document.getElementById('plat-perplexity').checked,
+  };
+  chrome.storage.local.set({ kivault_settings: settings }, () => {
+    const msg = document.getElementById('save-msg');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 2000);
+  });
+};
+
+document.getElementById('btn-clear-all').onclick = () => {
+  if (confirm('Alle gespeicherten Threads unwiderruflich löschen?'))
+    chrome.runtime.sendMessage({ type: 'CLEAR_ALL_THREADS' });
+};
+document.getElementById('btn-clear-learn').onclick = () => {
+  if (confirm('Alle Lerndaten zurücksetzen?'))
+    chrome.runtime.sendMessage({ type: 'RESET_LEARNING' });
+};
+</script>
+</body>
+</html>

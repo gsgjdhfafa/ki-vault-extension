@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>KI-Vault</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 400px; min-height: 500px;
+    background: #0a0f1e; color: #e8f0fe;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 13px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0d1a35, #0a1428);
+    border-bottom: 1px solid #1e2d55;
+    padding: 16px 18px 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .logo { font-size: 22px; }
+  .header-text h1 { font-size: 15px; font-weight: 800; color: #00d4ff; }
+  .header-text p  { font-size: 11px; color: #7b93c8; margin-top: 2px; }
+  .header-actions { margin-left: auto; display: flex; gap: 8px; }
+  .btn-icon {
+    background: #162040; border: 1px solid #1e2d55; color: #7b93c8;
+    border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 13px;
+    transition: all .15s;
+  }
+  .btn-icon:hover { background: #1e2d55; color: #e8f0fe; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; border-bottom: 1px solid #1e2d55;
+    background: #080d1a;
+  }
+  .tab {
+    flex: 1; padding: 10px 8px; text-align: center; cursor: pointer;
+    font-size: 12px; color: #7b93c8; border-bottom: 2px solid transparent;
+    transition: all .15s;
+  }
+  .tab.active { color: #00d4ff; border-bottom-color: #00d4ff; font-weight: 700; }
+  .tab:hover:not(.active) { color: #e8f0fe; background: #0d1428; }
+
+  /* ── PANELS ── */
+  .panel { display: none; padding: 16px 18px; }
+  .panel.active { display: block; }
+
+  /* ── STATS GRID ── */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-card {
+    background: #0d1428; border: 1px solid #1e2d55; border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .stat-num { font-size: 24px; font-weight: 800; color: #00d4ff; }
+  .stat-lbl { font-size: 11px; color: #7b93c8; margin-top: 2px; }
+
+  /* ── CATEGORY BARS ── */
+  .cat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .cat-label { width: 120px; font-size: 11px; color: #7b93c8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cat-bar-wrap { flex: 1; background: #162040; border-radius: 4px; height: 6px; }
+  .cat-bar { height: 6px; border-radius: 4px; background: linear-gradient(90deg, #00e5a0, #00d4ff); }
+  .cat-count { font-size: 11px; color: #7b93c8; width: 20px; text-align: right; }
+
+  /* ── THREAD LIST ── */
+  .thread-item {
+    background: #0d1428; border: 1px solid #1e2d55; border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 8px; cursor: pointer;
+    transition: border-color .15s;
+  }
+  .thread-item:hover { border-color: #00d4ff44; }
+  .thread-header { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+  .score-pill {
+    font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .thread-title { font-size: 12px; font-weight: 600; color: #e8f0fe; flex: 1; line-height: 1.4; }
+  .thread-meta { font-size: 11px; color: #7b93c8; display: flex; gap: 10px; flex-wrap: wrap; }
+  .thread-actions { display: flex; gap: 6px; margin-top: 8px; }
+  .btn-sm {
+    padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer;
+    border: 1px solid; transition: all .15s;
+  }
+  .btn-vote-up   { background: #00e5a022; border-color: #00e5a044; color: #00e5a0; }
+  .btn-vote-down { background: #ff6b6b22; border-color: #ff6b6b44; color: #ff6b6b; }
+  .btn-del       { background: transparent; border-color: #333; color: #555; }
+  .btn-dl        { background: #00d4ff22; border-color: #00d4ff44; color: #00d4ff; }
+  .btn-sm:hover  { opacity: .8; }
+
+  /* ── SEARCH ── */
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-wrap input {
+    width: 100%; background: #0d1428; border: 1px solid #1e2d55; border-radius: 8px;
+    padding: 8px 12px 8px 34px; color: #e8f0fe; font-size: 12px; outline: none;
+  }
+  .search-wrap input:focus { border-color: #00d4ff44; }
+  .search-wrap::before { content: '🔍'; position: absolute; left: 10px; top: 8px; font-size: 13px; }
+
+  /* ── PLATFORM PILLS ── */
+  .plat-filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .plat-pill {
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; cursor: pointer;
+    border: 1px solid #1e2d55; color: #7b93c8; background: #0d1428;
+    transition: all .15s;
+  }
+  .plat-pill.active { background: #162040; border-color: #00d4ff44; color: #00d4ff; font-weight: 700; }
+
+  /* ── LEARNING TAB ── */
+  .learn-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #1e2d5533; }
+  .learn-kw { font-size: 12px; color: #e8f0fe; font-family: monospace; }
+  .learn-delta { font-size: 12px; font-weight: 700; }
+  .learn-hits { font-size: 11px; color: #7b93c8; }
+
+  /* ── EXPORT BTN ── */
+  .export-btn {
+    width: 100%; padding: 12px; background: linear-gradient(135deg, #00d4ff, #00e5a0);
+    border: none; border-radius: 10px; color: #0a0f1e; font-weight: 800;
+    font-size: 14px; cursor: pointer; margin-top: 8px;
+    transition: opacity .15s;
+  }
+  .export-btn:hover { opacity: .9; }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 40px 20px; color: #3d5490; }
+  .empty .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty p { font-size: 12px; line-height: 1.7; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1e2d55; border-radius: 4px; }
+
+  #panel-threads { max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🏛️</div>
+  <div class="header-text">
+    <h1>KI-Vault</h1>
+    <p id="hdr-sub">Lädt...</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn-icon" id="btn-export" title="Als ZIP exportieren">📦 ZIP</button>
+    <button class="btn-icon" id="btn-options" title="Einstellungen">⚙️</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="overview">📊 Übersicht</div>
+  <div class="tab"        data-tab="threads">📄 Threads</div>
+  <div class="tab"        data-tab="learning">🧠 Lernen</div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="panel active" id="panel-overview">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">–</div>
+      <div class="stat-lbl">Threads gesamt</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-top">–</div>
+      <div class="stat-lbl">🏆 Top-Assets</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-avg">–</div>
+      <div class="stat-lbl">Ø Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-learned">–</div>
+      <div class="stat-lbl">🧠 Gelerntes</div>
+    </div>
+  </div>
+
+  <div style="font-size:12px;font-weight:700;color:#00d4ff;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;">Kategorien</div>
+  <div id="cat-bars"></div>
+
+  <div style="font-size:12px;font-weight:700;color:#00d4ff;margin:14px 0 10px;text-transform:uppercase;letter-spacing:.05em;">Plattformen</div>
+  <div id="plat-bars"></div>
+
+  <div style="font-size:12px;font-weight:700;color:#00d4ff;margin:14px 0 10px;text-transform:uppercase;letter-spacing:.05em;">Zuletzt gespeichert</div>
+  <div id="recent-list"></div>
+</div>
+
+<!-- THREADS -->
+<div class="panel" id="panel-threads">
+  <div class="search-wrap">
+    <input type="text" id="thread-search" placeholder="Suchen…">
+  </div>
+  <div class="plat-filters" id="plat-filters">
+    <div class="plat-pill active" data-plat="all">Alle</div>
+    <div class="plat-pill" data-plat="ChatGPT">ChatGPT</div>
+    <div class="plat-pill" data-plat="Claude">Claude</div>
+    <div class="plat-pill" data-plat="Gemini">Gemini</div>
+    <div class="plat-pill" data-plat="Perplexity">Perplexity</div>
+  </div>
+  <div id="thread-list"></div>
+</div>
+
+<!-- LEARNING -->
+<div class="panel" id="panel-learning">
+  <div style="font-size:12px;color:#7b93c8;margin-bottom:14px;line-height:1.6;">
+    Das System lernt aus deinen 👍/👎 Bewertungen und passt die Keyword-Gewichtung automatisch an.
+  </div>
+  <div id="learn-list"></div>
+  <div style="margin-top:16px;">
+    <button id="btn-reset-learn" style="width:100%;padding:8px;background:transparent;border:1px solid #ff6b6b44;color:#ff6b6b;border-radius:8px;cursor:pointer;font-size:12px;">🔄 Lerngewichte zurücksetzen</button>
+  </div>
+  <div style="margin-top:10px;">
+    <button class="export-btn" id="btn-export-2">📦 Vault als ZIP exportieren</button>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

@@ -93,7 +93,16 @@ const DEFAULT_KEYWORDS = {
   'monetar':       6, 'umsatz':      5, 'revenue':     5, 'saas':       6,
   'retainer':      6, 'lizenz':      6, 'tier':        4, 'preismodell': 5,
   'ki4ki':         8, 'kunden':      4, 'akquise':     5, 'kundenwert':  5,
-  // KI / Agent
+  // KI / Agent'vebeg': 7,
+  'ausgemustert': 6,
+  'aussonderung': 6,
+  'surplus': 5,
+  'refurbished': 5,
+  'restposten': 5,
+  'epa': 6,
+  'wipo': 6,
+  'gebrauchsmuster': 7,
+  'prior art': 6,
   'systemprompt':  6, 'system prompt': 6, 'agent':     5, 'llm':        5,
   'prompt':        4, 'claude':      3, 'gpt':         3, 'gemini':     3,
   // TTT / Tauchen
@@ -160,14 +169,45 @@ async function scoreThread(text, msgCount) {
 }
 
 // ── CATEGORY CLASSIFIER ──────────────────────────────────────────────
-function classifyCategory(text) {
+function classifyCategory(function classifyCategory(text) {
   const lower = text.toLowerCase();
   const scores = {
-    'HTML_TOOLS':      0,
-    'CODE':            0,
-    'KONZEPTE':        0,
+    'HTML_TOOLS': 0,
+    'CODE': 0,
+    'KI4KI': 0,
+    'PATENTE': 0,
+    'BESCHAFFUNG': 0,
+    'KONZEPTE': 0,
     'AUTOMATISIERUNG': 0,
-    'TTT_TAUCHEN':     0,
+    'TTT_TAUCHEN': 0,
+  };
+
+  ['html','css','dashboard','popup','interface','webseite','website','frontend','dom','canvas']
+    .forEach(k => { if (lower.includes(k)) scores['HTML_TOOLS'] += 3; });
+
+  ['python','javascript','typescript','bash','powershell','function(','=>','class ','import ','const ','def ','npm','git','docker']
+    .forEach(k => { if (lower.includes(k)) scores['CODE'] += 3; });
+
+  ['ki4ki','ki für ki','ki fuer ki','ai for ai','meta-agent','agent-builder','self-improving','recursive agent']
+    .forEach(k => { if (lower.includes(k)) scores['KI4KI'] += 5; });
+
+  ['patent','dpma','epa','wipo','schutzrecht','gebrauchsmuster','marke','markenanmeldung','prior art','patentrecherche','erfindung','patentanwalt']
+    .forEach(k => { if (lower.includes(k)) scores['PATENTE'] += 5; });
+
+  ['ausgemustert','aussonderung','surplus','vebeg','zoll-auktion','zollauktion','bundeswehr','thw','refurbished','gebraucht-bestand','lagerauflösung','restposten','second-hand','beschaffung']
+    .forEach(k => { if (lower.includes(k)) scores['BESCHAFFUNG'] += 5; });
+
+  ['businessplan','masterplan','konzept','roadmap','strategie','geschäftsmodell','preismodell','saas','monetar','retainer']
+    .forEach(k => { if (lower.includes(k)) scores['KONZEPTE'] += 3; });
+
+  ['n8n','workflow','automation','webhook','trigger','cron','api','zap','make.com','pipedream','service worker','background','script','automat']
+    .forEach(k => { if (lower.includes(k)) scores['AUTOMATISIERUNG'] += 3; });
+
+  ['ttt','taucherteam','triton','tauchen','tauchgang','kompressor','tauchbasis','neopren','gerrit']
+    .forEach(k => { if (lower.includes(k)) scores['TTT_TAUCHEN'] += 4; });
+
+  return Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+}
   };
 
   // HTML_TOOLS
@@ -352,13 +392,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       const files = {};
 
       // Build virtual file tree
-      const catMap = {
-        HTML_TOOLS:      '_KAI_VAULT/01_HTML_TOOLS/',
-        CODE:            '_KAI_VAULT/04_CODE/',
-        KONZEPTE:        '_KAI_VAULT/03_KONZEPTE/',
-        AUTOMATISIERUNG: '_KAI_VAULT/07_AUTOMATISIERUNG/',
-        TTT_TAUCHEN:     '_KAI_VAULT/06_TTT_TAUCHEN/',
-      };
+      const const catMap = {
+          HTML_TOOLS:      '_KAI_VAULT/01_HTML_TOOLS/',
+          KI4KI:           '_KAI_VAULT/02_KI4KI/',
+          KONZEPTE:        '_KAI_VAULT/03_KONZEPTE/',
+          CODE:            '_KAI_VAULT/04_CODE/',
+          PATENTE:         '_KAI_VAULT/05_PATENTE/',
+          TTT_TAUCHEN:     '_KAI_VAULT/06_TTT_TAUCHEN/',
+          AUTOMATISIERUNG: '_KAI_VAULT/07_AUTOMATISIERUNG/',
+          BESCHAFFUNG:     '_KAI_VAULT/08_BESCHAFFUNG/',
+        };
 
       threads.forEach(t => {
         const dir      = catMap[t.category] || '_KAI_VAULT/05_REFERENZ/';

@@ -168,3 +168,25 @@ ki-vault-extension/
 ---
 
 *KI-Vault v1.0 · Gerrit Großmaas · April 2026*
+
+
+---
+
+## Datenschutz & Sicherheit
+
+Diese Extension ist bewusst **lokal** ausgelegt. Klare Regeln:
+
+- **Kein Cloud-Upload.** Alle Daten bleiben in deinem Browser-Speicher (chrome.storage.local) bzw. werden lokal exportiert.
+- **Keine Telemetrie.** Keine Analytics, kein externes Tracking, keine Third-Party-Requests aus der Extension heraus.
+- **Nur die deklarierten Hosts.** Die Extension liest ausschliesslich KI-Threads auf den im manifest.json deklarierten Domains: chat.openai.com / chatgpt.com, claude.ai, gemini.google.com, perplexity.ai.
+- **Keine sensiblen Daten reinscrollen.** Die Extension liest sichtbaren Thread-Inhalt. Gib keine Kunden-, Mitarbeiter- oder Mandantendaten in KI-Threads ein, die du danach automatisch erfassen laesst.
+- **DSGVO-Hinweis.** Bei geschaeftlicher Nutzung (z.B. Taucherteam Triton GmbH oder KI4KI) vorher die Auftragsverarbeitung des jeweiligen KI-Anbieters pruefen und personenbezogene Daten in Prompts vermeiden.
+- **Open Source.** Code unter MIT-Lizenz einsehbar. Beitraege und Security-Hinweise willkommen.
+
+### Verantwortliche Nutzung
+
+Die Extension ist ein Werkzeug, kein Schutz. Sie ersetzt nicht die DSGVO-Bewertung des KI-Anbieters, dem du deine Inhalte gibst. Verantwortung fuer den Inhalt der Threads liegt beim Nutzer.
+
+### Lizenz
+
+MIT - siehe [LICENSE](LICENSE).
